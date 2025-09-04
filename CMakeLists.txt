@@ -31,6 +31,18 @@ target_include_directories(test_logging
 
 ament_target_dependencies(test_logging rclcpp rclcpp_lifecycle fmt)
 
+add_library(ros2_logging_fmt SHARED
+  src/empty.cpp
+)
+ament_target_dependencies(ros2_logging_fmt
+  rclcpp rclcpp_lifecycle fmt
+)
+target_include_directories(ros2_logging_fmt
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
 ament_export_dependencies(rclcpp fmt)
 
 install(
@@ -38,8 +50,11 @@ install(
   DESTINATION include
 )
 
-install(TARGETS test_logging
-    RUNTIME DESTINATION lib/${PROJECT_NAME})
+install(TARGETS test_logging ros2_logging_fmt
+  EXPORT export_${PROJECT_NAME}
+  RUNTIME DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_package()
+
